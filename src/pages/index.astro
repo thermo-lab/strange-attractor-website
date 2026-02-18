@@ -1,17 +1,58 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
+// Get all prints and sort by date (newest first)
+const prints = await getCollection('prints');
+const sortedPrints = prints.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Strange Attractor Prints">
+	<main class="pt-24 px-4 pb-20 max-w-6xl mx-auto">
+		
+        <div class="text-center py-20 space-y-6">
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-white to-indigo-200">
+                Chaos in Ink.
+            </h1>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">
+                Curated strange attractor visualizations, printed on high-quality archival paper.
+            </p>
+        </div>
+
+        <section id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sortedPrints.map((print) => (
+                <article class="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all duration-300">
+                    <div class="aspect-square overflow-hidden bg-gray-900">
+                        <img 
+                            src={print.data.coverImage} 
+                            alt={print.data.title}
+                            class="object-cover w-full h-full group-hover:scale-105 transition duration-700 opacity-90 group-hover:opacity-100"
+                        />
+                    </div>
+
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white group-hover:text-indigo-300 transition">{print.data.title}</h2>
+                                <p class="text-xs text-gray-500 mt-1">{print.data.date.toISOString().split('T')[0]}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-gray-400 text-sm mb-6 line-clamp-3">
+                            {print.body}
+                        </div>
+
+                        <a 
+                            href={`https://www.peecho.com/print/en/${print.data.peechoId}`}
+                            target="_blank"
+                            class="block w-full text-center py-3 rounded-xl bg-white text-black font-semibold hover:bg-indigo-50 transition-colors"
+                        >
+                            Purchase Print
+                        </a>
+                    </div>
+                </article>
+            ))}
+        </section>
+
+	</main>
+</Layout>
